@@ -22,8 +22,13 @@ public class App {
     public static void main(String[] args) {
         int exitMain = 1;
 
+        // add demo data
+        addDemoData();
+
         // Create menu
         while (exitMain == 1) {
+            // clear console
+            System.out.print("\033[H\033[2J");
 
             System.out.println("1. Add Records");
             System.out.println("2. Update Record");
@@ -45,20 +50,21 @@ public class App {
 
                     break;
                 case 3: // delete
-
+                    deleteRecord();
                     break;
                 case 4: // search
-
+                    searchRecord();
                     break;
                 case 5: // view all
                     viewRecord();
                     break;
                 case 6: // delete all
-
+                    deleteAll();
                     break;
                 case 7: // exit
+                    System.out.println("Exiting...");
+                    return;
 
-                    break;
                 default:
                     break;
             }
@@ -78,6 +84,157 @@ public class App {
                     break;
             }
 
+        }
+    }
+
+    private static void addDemoData() {
+        String FNAMES[] = { "John", "Jane", "Mark", "Mary", "Peter", "Paul", "Luke", "James", "Jude", "Simon" };
+        String LNAMES[] = { "Doe", "Doe", "Smith", "Smith", "Parker", "Parker", "Skywalker", "Bond", "Bond", "Bond" };
+        int SNUMBERS[] = { 123456, 234567, 345678, 456789, 567890, 678901, 789012, 890123, 901234, 123456 };
+        String CODES[] = { "CSC101", "CSC102", "CSC103", "CSC104", "CSC105", "CSC106", "CSC107", "CSC108", "CSC109",
+                "CSC110" };
+
+        // ADD THESE TO THE ARRAY LISTS
+        for (int i = 0; i < FNAMES.length; i++) {
+            fNames.add(FNAMES[i]);
+            lNames.add(LNAMES[i]);
+            sNumbers.add(SNUMBERS[i]);
+            cCodes.add(CODES[i]);
+        }
+    }
+
+    // private static void searchRecord() {
+    // // search record using stundent number
+    // System.out.print("\nEnter student number: ");
+    // int sNumber = input.nextInt();
+
+    // // get index of sNumber
+    // int index = sNumbers.indexOf(sNumber);
+
+    // // print record
+    // System.out.println("\n--------------------------------------------------");
+    // System.out.println("First Name: " + fNames.get(index));
+    // System.out.println("Last Name: " + lNames.get(index));
+    // System.out.println("Student Number: " + sNumbers.get(index));
+    // System.out.println("Course Code: " + cCodes.get(index));
+    // }
+
+    private static void searchRecord() {
+        // search record using student number
+        System.out.print("\nEnter student number: ");
+        int sNumber = input.nextInt();
+
+        // convert arrayLists to arrays
+        String[] fNamesArr = fNames.toArray(new String[fNames.size()]);
+        String[] lNamesArr = lNames.toArray(new String[lNames.size()]);
+        Integer[] sNumbersArr = sNumbers.toArray(new Integer[sNumbers.size()]);
+        String[] cCodesArr = cCodes.toArray(new String[cCodes.size()]);
+
+        // sort the arrays
+        for (int i = 0; i < sNumbersArr.length; i++) {// loopinh multiple times
+            for (int j = 0; j < sNumbersArr.length - 1; j++) { // looping once through the array to compare each element
+                if (sNumbersArr[j] > sNumbersArr[j + 1]) {
+                    // swap sNumbersArr
+                    int temp = sNumbersArr[j];
+                    sNumbersArr[j] = sNumbersArr[j + 1];
+                    sNumbersArr[j + 1] = temp;
+
+                    // swap fNamesArr
+                    String temp2 = fNamesArr[j];
+                    fNamesArr[j] = fNamesArr[j + 1];
+                    fNamesArr[j + 1] = temp2;
+
+                    // swap lNamesArr
+                    String temp3 = lNamesArr[j];
+                    lNamesArr[j] = lNamesArr[j + 1];
+                    lNamesArr[j + 1] = temp3;
+
+                    // swap cCodesArr
+                    String temp4 = cCodesArr[j];
+                    cCodesArr[j] = cCodesArr[j + 1];
+                    cCodesArr[j + 1] = temp4;
+                }
+            }
+        }
+
+        // get index of sNumber using binary search
+        int upperBound = sNumbersArr.length - 1;
+        int lowerBound = 0;
+        int index = -1;
+        int midPoint = sNumbersArr.length / 2;
+
+        for (int i = 0; i < sNumbersArr.length; i++) {
+            if (sNumber == sNumbersArr[midPoint]) {
+                index = midPoint;
+                break;
+            } else if (sNumber > sNumbersArr[midPoint]) {
+                lowerBound = midPoint + 1; // ignores the lower half
+                midPoint = (upperBound + lowerBound) / 2; // set a new midpoint
+            } else if (sNumber < sNumbersArr[midPoint]) {
+                upperBound = midPoint - 1; // ignores the upper half
+                midPoint = (upperBound + lowerBound) / 2; // set a new midpoint
+            }
+        }
+
+        // if index is -1, record not found
+        if (index == -1) {
+            System.out.println("Record not found");
+            return;
+        } else {
+            // print record
+            System.out.println("\n--------------------------------------------------");
+            System.out.println("First Name: " + fNamesArr[index]);
+            System.out.println("Last Name: " + lNamesArr[index]);
+            System.out.println("Student Number: " + sNumbersArr[index]);
+            System.out.println("Course Code: " + cCodesArr[index]);
+            return;
+        }
+    }
+
+    private static void deleteRecord() {
+        // search record using stundent number
+        System.out.print("\nEnter student number: ");
+        int sNumber = input.nextInt();
+
+        // get index of sNumber
+        int index = sNumbers.indexOf(sNumber);
+
+        // delete record
+        fNames.remove(index);
+        lNames.remove(index);
+        sNumbers.remove(index);
+        cCodes.remove(index);
+
+        // update file
+        fileOps(fNames, lNames, sNumbers, cCodes);
+    }
+
+    private static void deleteAll() {
+        // clear all arraylists
+        fNames.clear();
+        lNames.clear();
+        sNumbers.clear();
+        cCodes.clear();
+
+        // clear file
+        File myFile = new File("src\\main\\java\\com\\practise101\\records.txt");
+        try {
+            if (!myFile.exists()) {
+                myFile.createNewFile();
+            }
+
+            FileWriter fw = new FileWriter(myFile, false);
+            BufferedWriter bw = new BufferedWriter(fw);
+
+            // overwrite file data with new data
+            bw.write("");
+            bw.close();
+            fw.close();
+
+            System.out.println("All records deleted successfully");
+
+        } catch (Exception e) {
+            System.out.println("Error: " + e);
         }
     }
 
@@ -105,7 +262,7 @@ public class App {
             System.out.println(recordData);
 
             // overwrite file data with new data
-            bw.write(recordData);
+            bw.append(recordData);
             bw.close();
             fw.close();
 

@@ -14,3 +14,8 @@ Last Name: jasbahsbhsa
 Student Number: 0
 Course Code: bsbs
 
+First Name: Simon
+Last Name: Bond
+Student Number: 123456
+Course Code: CSC110
+
